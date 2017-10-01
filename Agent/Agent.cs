@@ -1,83 +1,56 @@
 ﻿using Agent.Commands;
+using Agent.Communication;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Agent
 {
     public class Agent
     {
+        public string IP { get; private set; }
         public int Port { get; private set; }
-        public UdpClient UdpReceiver { get; private set; }
-        public bool shouldStop { get; private set; }
+
+        private Receiver receiver;
 
         public Dictionary<string, Command> Commands { get; private set; }
 
         public Agent(int port)
         {
             Port = port;
+            IP = GetLocalIPAddress();
 
             Commands = new Dictionary<string, Command>();
-            UdpReceiver = new UdpClient(port, AddressFamily.InterNetwork);
+
+            receiver = new Receiver(port);
+            receiver.OnReceive += Receiver_OnReceive;
+
         }
 
         public void AddCommand(Command command)
         {
             Commands[command.GetType().Name.ToLower()] = command;
             Console.WriteLine("Adding command {0}", command.GetType().Name);
-
         }
 
-        public void Execute()
+        private void Receiver_OnReceive(object sender, ReceiveEventArgs e)
         {
-            shouldStop = false;
-            Console.WriteLine("Agent running...");
+            Console.WriteLine("{0} >> {1}", e.source, e.message);
+            CommandHandler.HandleUnparsedCommand(this, e.message);
+        }
 
-            while(!shouldStop) {
-                try {
-                    var dataReceived = UdpReceiver.ReceiveAsync();
-                    var message = Encoding.UTF8.GetString(dataReceived.Result.Buffer).Replace("\"", "");
-
-                    Console.WriteLine("{0} >> {1}", dataReceived.Result.RemoteEndPoint.Address, message);
-                    if(!HandleUnparsedCommand(message)) {
-                        Console.WriteLine("Unknown message");
-                    }
-
-                } catch(Exception ex) {
-                    Console.WriteLine("Exception: " + ex.Message);
-                }
-            }
-
-            Console.WriteLine("Agent stopped");
+        public void Start()
+        {
+            receiver.Start();
+            Console.WriteLine("Agent is started on {0}:{1}", IP, Port);
         }
 
         public void Stop()
         {
-            shouldStop = true;
-        }
-
-        public bool HandleUnparsedCommand(string text)
-        {
-            string[] parts = text.Split(' ');
-
-            if(parts.Length > 0) {
-                if(parts.Length > 1) {
-                    string[] args = new string[parts.Length - 1];
-
-                    for(int i = 0; i < parts.Length - 1; i++)
-                        args[i] = parts[i + 1];
-
-                    return HandleCommand(parts[0].ToLower(), args);
-                } else {
-                    return HandleCommand(parts[0].ToLower());
-                }
-            }
-
-            return false;
+            receiver.Stop();
+            Console.WriteLine("Agent is stopped");
         }
 
         public bool HandleCommand(string command, params string[] args)
@@ -86,8 +59,28 @@ namespace Agent
                 return CommandHandler.HandleCommand(Commands[command], args);
             }
 
+            Console.WriteLine("Unknown message");
             return false;
         }
 
+        public Command GetCommand(string command)
+        {
+            command = command.ToLower();
+            if(Commands.ContainsKey(command)) {
+                return Commands[command];
+            }
+            return null;
+        }
+
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach(var ip in host.AddressList) {
+                if(ip.AddressFamily == AddressFamily.InterNetwork) {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("Local IP Address Not Found!");
+        }
     }
 }

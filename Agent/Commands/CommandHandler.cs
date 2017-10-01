@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,6 +11,43 @@ namespace Agent.Commands
 {
     public class CommandHandler
     {
+        public static bool HandleUnparsedCommand(Agent agent, string text)
+        {
+            //string[] parts = text.Split(' ');
+            //dynamic data = JsonConvert.DeserializeObject(text);
+            //string command = data[0];
+
+            JArray parts = JsonConvert.DeserializeObject<JArray>(text);
+            
+            if(parts.Count > 0) {
+                string command = parts[0].ToString().ToLower();
+                if(parts.Count > 1) {
+                    string[] args = new string[parts.Count - 1];
+
+                    for(int i = 0; i < parts.Count - 1; i++)
+                        args[i] = parts[i + 1].ToString();
+
+                    return agent.HandleCommand(command, args);
+                } else {
+                    return agent.HandleCommand(command);
+                }
+            }
+
+            return false;
+        }
+
+        public bool HandleCommand(Agent agent, string command, params string[] args)
+        {
+            var c = agent.GetCommand(command);
+            if(c != null) {
+                return CommandHandler.HandleCommand(c, args);
+            }
+
+            Console.WriteLine("Unknown message");
+            return false;
+        }
+
+
         public static bool HandleCommand(Command command, params string[] args)
         {
             foreach(var methodIfo in command.GetType().GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public).Where(x => x.Name == "Call")) {
@@ -42,6 +81,7 @@ namespace Agent.Commands
                 }
             }
 
+            Console.WriteLine("Invalid arguments");
             return false;
         }
     }
