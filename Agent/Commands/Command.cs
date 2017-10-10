@@ -1,19 +1,26 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
-    public class Command
+    public abstract class Command
     {
+        public string Type { get; set; }
+        public virtual bool NeedsACK { get { return true; } }
+        [JsonIgnore]
+        public long ExecutedTime { get; set; }
+
         protected Agent Agent { get; private set; }
+
+        public Command()
+        {
+            Type = GetType().Name;
+        }
 
         public void Inject(Agent agent)
         {
             Agent = agent;
         }
+
+        public abstract void Execute();
     }
 }

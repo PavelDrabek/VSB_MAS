@@ -1,48 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Agent.Communication;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 
 namespace Agent.Commands
 {
     public class Send : Command
     {
-        public string Receiver { get; set; }
-        public string Content { get; set; }
+        public string IP { get; set; }
+        public int Port { get; set; }
+        public JObject Message { get; set; }
 
-        public void Call()
+        public void Call(string ip, int port, string message)
         {
-            Console.WriteLine("Working: ");
+            IP = ip;
+            Port = port;
+            Message = JsonConvert.DeserializeObject<JObject>(message);
+            Execute();
         }
-
-        public void Call(string receiver, string message)
+        public override void Execute()
         {
-            string[] receiverSplit = receiver.Split(':');
-
-            try {
-                string ip = receiverSplit[0];
-                int port = int.Parse(receiverSplit[1]);
-
-                SendMessage(ip, port, message);
-            } catch (Exception e) {
-                Console.WriteLine(e.Message);
-            }
-        }
-
-        public static void SendMessage(string ip, int port, string message)
-        {
-            try {
-                var remoteEP = new IPEndPoint(IPAddress.Parse(ip), port);
-                var dataToSend = Encoding.UTF8.GetBytes(message);
-
-                UdpClient udpSender = new UdpClient();
-                udpSender.SendAsync(dataToSend, dataToSend.Length, remoteEP);
-            } catch(Exception ex) {
-                Console.WriteLine("Exception: " + ex.Message);
-            }
+            string msg = Message.ToString(Formatting.None);
+            Console.WriteLine("Sending \"{0}\" to {1}:{2}", msg, IP, Port);
+            new Sender(Agent.Receiver, IP, Port, msg).Send();
         }
     }
 }

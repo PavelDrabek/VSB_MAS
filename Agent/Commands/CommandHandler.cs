@@ -11,42 +11,39 @@ namespace Agent.Commands
 {
     public class CommandHandler
     {
-        public static bool HandleUnparsedCommand(Agent agent, string text)
+        public static Command GetCommand(Command[] commands, string json)
         {
-            //string[] parts = text.Split(' ');
-            //dynamic data = JsonConvert.DeserializeObject(text);
-            //string command = data[0];
+            JObject dataObj = JsonConvert.DeserializeObject<JObject>(json);
+            string commandType = dataObj["type"].ToString();
 
-            JArray parts = JsonConvert.DeserializeObject<JArray>(text);
-            
-            if(parts.Count > 0) {
-                string command = parts[0].ToString().ToLower();
-                if(parts.Count > 1) {
-                    string[] args = new string[parts.Count - 1];
-
-                    for(int i = 0; i < parts.Count - 1; i++)
-                        args[i] = parts[i + 1].ToString();
-
-                    return agent.HandleCommand(command, args);
-                } else {
-                    return agent.HandleCommand(command);
+            Type type = null;
+            for(int i = 0; i < commands.Length; i++) {
+                if(commandType.ToLower().Equals(commands[i].GetType().Name.ToLower())) {
+                    type = commands[i].GetType();
                 }
             }
 
-            return false;
-        }
-
-        public bool HandleCommand(Agent agent, string command, params string[] args)
-        {
-            var c = agent.GetCommand(command);
-            if(c != null) {
-                return CommandHandler.HandleCommand(c, args);
+            if(type == null) {
+                throw new Exception("Unknown command");
             }
 
-            Console.WriteLine("Unknown message");
-            return false;
+            Command command = (Command)JsonConvert.DeserializeObject(json, type);
+
+            return command;
         }
 
+        public static Command GetCommand(string json)
+        {
+            JObject dataObj = JsonConvert.DeserializeObject<JObject>(json);
+            //string commandType = dataObj["type"].ToString();
+
+            string commandType = typeof(Command).Namespace + "." + dataObj["type"].ToString();
+
+            Type type = Type.GetType(commandType, true, true);
+            Command command = (Command)JsonConvert.DeserializeObject(json, type);
+
+            return command;
+        }
 
         public static bool HandleCommand(Command command, params string[] args)
         {

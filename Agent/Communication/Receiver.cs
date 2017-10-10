@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Agent.Communication
 {
     public class ReceiveEventArgs : EventArgs
     {
-        public string source;
+        public string fromIP;
+        public int fromPort;
         public string message;
     }
 
@@ -41,15 +39,32 @@ namespace Agent.Communication
 
         private void Work()
         {
+            string message = "";
+            string ip = "";
+            int port = -1;
+
             while(true) {
+
                 try {
                     var dataReceived = client.ReceiveAsync();
-                    var message = Encoding.UTF8.GetString(dataReceived.Result.Buffer);
-                    OnReceive?.Invoke(this, new ReceiveEventArgs() { message = message, source = dataReceived.Result.RemoteEndPoint.Address.ToString() });
+                    message = GetString(dataReceived.Result.Buffer);
+                    ip = dataReceived.Result.RemoteEndPoint.Address.ToString();
+                    port = dataReceived.Result.RemoteEndPoint.Port;
                 } catch(Exception ex) {
-                    Console.WriteLine("Exception: " + ex.Message);
+                    Console.WriteLine("Receiver Exception: " + ex.Message);
                 }
+
+                OnReceive?.Invoke(this, new ReceiveEventArgs() {
+                    message = message,
+                    fromIP = ip,
+                    fromPort = port
+                });
             }
+        }
+
+        private string GetString(byte[] bytes)
+        {
+            return Encoding.UTF8.GetString(bytes);
         }
     }
 }

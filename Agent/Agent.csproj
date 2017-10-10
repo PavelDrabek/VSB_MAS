@@ -8,9 +8,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Agent</RootNamespace>
     <AssemblyName>Agent</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -45,15 +46,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Agent.cs" />
+    <Compile Include="Agent\Agent.cs" />
+    <Compile Include="Agent\AgentDestination.cs" />
+    <Compile Include="Commands\Ack.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\CommandAttribute.cs" />
     <Compile Include="Commands\CommandHandler.cs" />
+    <Compile Include="Commands\Halt.cs" />
     <Compile Include="Commands\Send.cs" />
     <Compile Include="Communication\Receiver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Communication\Sender.cs" />
+    <Compile Include="Utilities\IPHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

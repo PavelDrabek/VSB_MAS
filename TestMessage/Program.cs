@@ -17,7 +17,7 @@ namespace TestMessage
 
             UdpClient udpSender = new UdpClient();
 
-            Console.WriteLine("Client Started");
+            Console.WriteLine("Client Started - sends to: {0}:{1}", ip, port);
 
             while(true) {
                 string message = Console.ReadLine();

@@ -14,16 +14,18 @@ namespace Agent
     {
         static void Main(string[] args)
         {
-            JArray data = JsonConvert.DeserializeObject<JArray>(@"[ ""send"" ,""10.0.0.1:88"", [ ""send"", ""10.0.0.1:90"", [""store"", ""ahoj""] ] ]");
-            string content = data[2].ToString();
+            //JArray data = JsonConvert.DeserializeObject<JArray>(@"[ ""send"" ,""10.0.0.1:88"", [ ""send"", ""10.0.0.1:90"", [""store"", ""ahoj""] ] ]");
+            //string content = data[2].ToString();
 
-            JObject dataObj = JsonConvert.DeserializeObject<JObject>(@"{""type"":""send"",""receiver"":""192.168.0.1:88"",""content"":{""type"":""send"",""receiver"":""192.168.0.1:88"",""content"":{""type"":""store"",""value"":""ahoj""}}");
-            string content2 = dataObj["content"].ToString();
+            //JObject dataObj = JsonConvert.DeserializeObject<JObject>(@"{""type"":""send"",""receiver"":""192.168.0.1:88"",""content"":{""type"":""send"",""receiver"":""192.168.0.1:88"",""content"":{""type"":""store"",""value"":""ahoj""}}");
+            //string content2 = dataObj["content"].ToString();
 
 
             Agent agent = new Agent(8888);
 
             agent.AddCommand(new Send());
+            agent.AddCommand(new Ack());
+            agent.AddCommand(new Halt());
 
             agent.Start();
         }
