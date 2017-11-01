@@ -14,7 +14,7 @@ namespace Agent.Commands
         public static Command GetCommand(Command[] commands, string json)
         {
             JObject dataObj = JsonConvert.DeserializeObject<JObject>(json);
-            string commandType = dataObj["type"].ToString();
+            string commandType = dataObj["Type"].ToString();
 
             Type type = null;
             for(int i = 0; i < commands.Length; i++) {
@@ -30,6 +30,11 @@ namespace Agent.Commands
             Command command = (Command)JsonConvert.DeserializeObject(json, type);
 
             return command;
+        }
+
+        public static string CommandToString(Command c)
+        {
+            return JsonConvert.SerializeObject(c);
         }
 
         public static Command GetCommand(string json)

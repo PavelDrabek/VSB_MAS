@@ -1,12 +1,4 @@
 ﻿using Agent.Commands;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Agent
 {
@@ -26,6 +18,9 @@ namespace Agent
             agent.AddCommand(new Send());
             agent.AddCommand(new Ack());
             agent.AddCommand(new Halt());
+            agent.AddCommand(new Store());
+            agent.AddCommand(new Duplicate());
+            agent.AddCommand(new Package());
 
             agent.Start();
         }

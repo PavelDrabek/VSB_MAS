@@ -1,13 +1,21 @@
 ﻿
+using Agent.Communication;
+
 namespace Agent.Commands
 {
     public class Ack : Command
     {
-        public override bool NeedsACK { get { return false; } } 
+        public string Message { get; set; }
+
+        public Ack() : base() { }
+
+        public Ack(Agent agent) : base(agent) { }
 
         public override void Execute()
         {
-            //Agent.ACKWaiting
+            // TODO
+            // A) Ma posilat ACK
+            // B) Ma ukoncit command cekani na ACK - asi toto
         }
     }
 }

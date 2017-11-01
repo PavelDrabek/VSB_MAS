@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace Agent.Communication
 {
     public class ReceiveEventArgs : EventArgs
     {
-        public string fromIP;
-        public int fromPort;
+        public string sourceIP;
+        public int sourcePort;
         public string message;
     }
 
@@ -56,15 +57,18 @@ namespace Agent.Communication
 
                 OnReceive?.Invoke(this, new ReceiveEventArgs() {
                     message = message,
-                    fromIP = ip,
-                    fromPort = port
+                    sourceIP = ip,
+                    sourcePort = port
                 });
             }
         }
 
         private string GetString(byte[] bytes)
         {
-            return Encoding.UTF8.GetString(bytes);
+            string str = Encoding.UTF8.GetString(bytes);
+            String unescapedString = Regex.Unescape(str);
+            //return unescapedString;
+            return str;
         }
     }
 }

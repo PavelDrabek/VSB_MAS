@@ -1,12 +1,12 @@
 ﻿
 namespace Agent
 {
-    public class AgentDestination
+    public class AgentContact
     {
         public string IP { get; private set; }
         public int Port { get; private set; }
 
-        public AgentDestination(string ip, int port)
+        public AgentContact(string ip, int port)
         {
             IP = ip;
             Port = port;
