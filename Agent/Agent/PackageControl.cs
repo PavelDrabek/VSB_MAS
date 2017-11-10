@@ -11,6 +11,9 @@ namespace Agent
         private Dictionary<string, string[]> files;
         private Dictionary<string, int> counter;
 
+        private static string sourceFolder = "../";
+        private static string saveFolder = "../received/";
+
         public PackageControl()
         {
             files = new Dictionary<string, string[]>();
@@ -19,7 +22,7 @@ namespace Agent
 
         public void Add(string filename, string data, int order, int count)
         {
-            Console.WriteLine("Adding {0}, package: {1}/{2}", filename, order, count);
+            //Console.WriteLine("Adding {0}, package: {1}/{2}", filename, order, count);
 
             if(!files.ContainsKey(filename)) {
                 files.Add(filename, new string[count]);
@@ -40,24 +43,26 @@ namespace Agent
         {
             Console.WriteLine("Saving file {0}", filename);
             string text = string.Join("", files[filename]);
-            System.IO.File.WriteAllBytes(filename, Convert.FromBase64String(text));
+            string path = saveFolder + filename;
+            Directory.CreateDirectory(saveFolder);
+            System.IO.File.WriteAllBytes(path, Convert.FromBase64String(text));
 
             return true;
         }
 
-        public static void Zip(string filename, string zipname)
+        public static void Zip(string sourcePath, string destPath)
         {
             using(ZipFile zip = new ZipFile()) {
-                zip.AddDirectory(filename);
-                zip.Save(zipname);
+                zip.AddDirectory(sourcePath);
+                zip.Save(destPath);
             }
         }
 
-        public static void Unzip(string zipname, string unzipname)
+        public static void Unzip(string zipPath, string destPath)
         {
-            if(ZipFile.IsZipFile(zipname)) {
-                using(ZipFile zip1 = ZipFile.Read(zipname)) {
-                    zip1.ExtractAll(unzipname);
+            if(ZipFile.IsZipFile(zipPath)) {
+                using(ZipFile zip1 = ZipFile.Read(zipPath)) {
+                    zip1.ExtractAll(destPath);
                 }
             }
         }

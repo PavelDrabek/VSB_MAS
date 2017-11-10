@@ -4,9 +4,10 @@ namespace Agent.Commands
 {
     public abstract class Command
     {
-        public string Type { get; set; }
-        public string SourceIP { get; set; }
-        public int SourcePort { get; set; }
+        public string type { get; set; }
+        public string sourceIp { get; set; }
+        public string tag { get; set; }
+        public int sourcePort { get; set; }
         [JsonIgnore]
         public long ExecutedTime { get; set; }
 
@@ -14,14 +15,15 @@ namespace Agent.Commands
 
         public Command()
         {
-            Type = GetType().Name;
+            type = GetType().Name.ToUpper();
         }
 
         public Command(Agent agent) : this()
         {
             Agent = agent;
-            SourceIP = Agent.IP;
-            SourcePort = Agent.Port;
+            tag = Agent.TAG;
+            sourceIp = Agent.IP;
+            sourcePort = Agent.Port;
         }
 
         public void Inject(Agent agent)

@@ -38,6 +38,7 @@ namespace Agent.Communication
             thread.Abort();
         }
 
+        static int x;
         private void Work()
         {
             string message = "";
@@ -55,6 +56,7 @@ namespace Agent.Communication
                     Console.WriteLine("Receiver Exception: " + ex.Message);
                 }
 
+                //Console.WriteLine("Received {0}", x++);
                 OnReceive?.Invoke(this, new ReceiveEventArgs() {
                     message = message,
                     sourceIP = ip,

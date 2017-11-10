@@ -10,7 +10,7 @@ namespace Agent.Commands
     {
         public string data { get; set; }
         public int order { get; set; }
-        public string filename { get; set; }
+        public string fileName { get; set; }
         public int partsCount { get; set; }
 
         public Package() : base() { }
@@ -18,7 +18,7 @@ namespace Agent.Commands
 
         public override void Execute()
         {
-            Agent.PackageControl.Add(filename, data, order, partsCount);
+            Agent.PackageControl.Add(fileName, data, order, partsCount);
         }
     }
 }

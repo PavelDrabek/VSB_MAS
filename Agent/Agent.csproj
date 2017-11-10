@@ -78,6 +78,7 @@
     <Compile Include="Commands\Result.cs" />
     <Compile Include="Commands\Send.cs" />
     <Compile Include="Commands\Store.cs" />
+    <Compile Include="Communication\IAckReceiver.cs" />
     <Compile Include="Communication\Receiver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
