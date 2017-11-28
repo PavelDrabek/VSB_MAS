@@ -17,7 +17,7 @@ namespace Agent
 
         public void Add(string ip, int port)
         {
-            Add(new AgentContact(ip, port));
+            Add(new AgentContact() { IP = ip, Port = port });
         }
         public void Add(AgentContact a)
         {

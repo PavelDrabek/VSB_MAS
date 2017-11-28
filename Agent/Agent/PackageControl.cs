@@ -11,8 +11,8 @@ namespace Agent
         private Dictionary<string, string[]> files;
         private Dictionary<string, int> counter;
 
-        private static string sourceFolder = "../";
-        private static string saveFolder = "../received/";
+        private static string sourceFolder = "";
+        private static string saveFolder = "";
 
         public PackageControl()
         {
@@ -20,7 +20,7 @@ namespace Agent
             counter = new Dictionary<string, int>();
         }
 
-        public void Add(string filename, string data, int order, int count)
+        public bool Add(string filename, string data, int order, int count, string sender)
         {
             //Console.WriteLine("Adding {0}, package: {1}/{2}", filename, order, count);
 
@@ -34,18 +34,21 @@ namespace Agent
                 counter[filename]++;
 
                 if(counter[filename] == count) {
-                    MakeFile(filename);
+                    return MakeFile(filename, sender + "/");
                 }
             }
+            return false;
         }
 
-        public bool MakeFile(string filename)
+        public bool MakeFile(string filename, string subfolder)
         {
             Console.WriteLine("Saving file {0}", filename);
             string text = string.Join("", files[filename]);
-            string path = saveFolder + filename;
-            Directory.CreateDirectory(saveFolder);
+            string path = saveFolder + subfolder + filename;
+            Directory.CreateDirectory(saveFolder + subfolder);
             System.IO.File.WriteAllBytes(path, Convert.FromBase64String(text));
+
+            Unzip(path, saveFolder + subfolder);
 
             return true;
         }
@@ -53,7 +56,11 @@ namespace Agent
         public static void Zip(string sourcePath, string destPath)
         {
             using(ZipFile zip = new ZipFile()) {
-                zip.AddDirectory(sourcePath);
+                zip.AddFile("Agent.exe");
+                zip.AddFile("DotNetZip.dll");
+                zip.AddFile("Newtonsoft.Json.dll");
+                zip.AddFile("config.xml");
+                //zip.AddDirectory(sourcePath);
                 zip.Save(destPath);
             }
         }

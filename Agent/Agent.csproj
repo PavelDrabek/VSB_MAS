@@ -75,6 +75,7 @@
     <Compile Include="Commands\Duplicate.cs" />
     <Compile Include="Commands\Halt.cs" />
     <Compile Include="Commands\Package.cs" />
+    <Compile Include="Commands\PackageReceived.cs" />
     <Compile Include="Commands\Result.cs" />
     <Compile Include="Commands\Send.cs" />
     <Compile Include="Commands\Store.cs" />
@@ -83,7 +84,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Communication\Sender.cs" />
+    <Compile Include="Utilities\ConfigData.cs" />
     <Compile Include="Utilities\IPHelper.cs" />
+    <Compile Include="Utilities\Logger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -24,7 +24,7 @@ namespace Agent.Commands
             }
 
             if(type == null) {
-                throw new Exception("Unknown command");
+                throw new Exception(String.Format("Unknown command {0}", json));
             }
 
             Command command = (Command)JsonConvert.DeserializeObject(json, type);

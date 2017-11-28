@@ -3,14 +3,8 @@ namespace Agent
 {
     public class AgentContact
     {
-        public string IP { get; private set; }
-        public int Port { get; private set; }
-
-        public AgentContact(string ip, int port)
-        {
-            IP = ip;
-            Port = port;
-        }
+        public string IP { get; set; }
+        public int Port { get; set; }
 
         public override string ToString()
         {

@@ -6,7 +6,7 @@ namespace Agent.Commands
 {
     public class Ack : Command
     {
-        public string Message { get; set; }
+        public string message { get; set; }
 
         public Ack() : base() { }
 

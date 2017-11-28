@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Agent.Communication;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,11 @@ namespace Agent.Commands
 
         public override void Execute()
         {
-            Agent.PackageControl.Add(fileName, data, order, partsCount);
+            bool result = Agent.PackageControl.Add(fileName, data, order, partsCount, sourceIp + "_" + sourcePort + "/");
+            if(result) {
+                var c = new PackageReceived(Agent);
+                new Sender(Agent, sourceIp, sourcePort, c);
+            }
         }
     }
 }

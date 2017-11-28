@@ -13,7 +13,7 @@ namespace Agent
             //string content2 = dataObj["content"].ToString();
 
 
-            Agent agent = new Agent(8888);
+            Agent agent = new Agent();
 
             agent.AddCommand(new Send());
             agent.AddCommand(new Ack());
@@ -21,6 +21,7 @@ namespace Agent
             agent.AddCommand(new Store());
             agent.AddCommand(new Duplicate());
             agent.AddCommand(new Package());
+            agent.AddCommand(new PackageReceived());
 
             agent.Start();
         }

@@ -97,32 +97,21 @@ namespace Agent.Communication
             Agent.OnSecondTick -= OnTick;
         }
 
-        private void Receiver_OnAckReceived(object sender, ReceiveEventArgs e)
+        private void OnTick(object sender, EventArgs e)
         {
-            if(e.message.ToLower() != Message.ToLower()) {
-                //Console.WriteLine("Acknowledged not for me {0}", Message);
+            if(Acknowledged) {
                 return;
             }
 
-            //Console.WriteLine("Acknowledged {0}", y++);
-
-            Acknowledged = true;
-            StopACK();
-            //Console.WriteLine("Acknowledged {0}", Message);
-            //Console.WriteLine("Acknowledged");
-        }
-
-        private void OnTick(object sender, EventArgs e)
-        {
             secondCount++;
             if(secondCount >= 5) {
                 secondCount = 0;
                 timeoutCount++;
-                Console.WriteLine("Message timeout");
+                Console.WriteLine("Message timeout {1}:{2} {0}", Message, IP, Port);
 
-                if(timeoutCount > 50) {
+                if(timeoutCount > 5) {
                     StopACK();
-                    Console.WriteLine("Message send failed: {0}", Message);
+                    Console.WriteLine("Message send failed {1}:{2} {0}", Message, IP, Port);
                 } else {
                     Send(false);
                 }
