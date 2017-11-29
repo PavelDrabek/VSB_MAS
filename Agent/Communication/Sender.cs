@@ -1,16 +1,15 @@
-﻿using Agent.Commands;
+﻿using AgentModel.Agent;
+using AgentModel.CommandData;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Agent.Communication
 {
     public class Sender : IAckReceiver
     {
-        public Agent Agent { get; private set; }
+        public IAgent Agent { get; private set; }
         public string IP { get; private set; }
         public int Port { get; private set; }
         public string Message { get; private set; }
@@ -24,11 +23,11 @@ namespace Agent.Communication
         private int timeoutCount;
         private int secondCount;
 
-        public Sender(Agent receiver, string ip, int port, Command command) : this(receiver, ip, port, CommandHandler.CommandToString(command))
+        public Sender(IAgent receiver, string ip, int port, Command command) : this(receiver, ip, port, CommandHandler.CommandToString(command))
         {
         }
 
-        public Sender(Agent receiver, string ip, int port, string message)
+        public Sender(IAgent receiver, string ip, int port, string message)
         {
             IP = ip;
             Port = port;
@@ -61,25 +60,12 @@ namespace Agent.Communication
             }
         }
 
-        //public static void SendACK(string ip, int port, string message)
-        //{
-        //    try {
-        //        var remoteEP = new IPEndPoint(IPAddress.Parse(ip), port);
-        //        var dataToSend = Encoding.UTF8.GetBytes(message);
-
-        //        UdpClient udpSender = new UdpClient();
-        //        udpSender.SendAsync(dataToSend, dataToSend.Length, remoteEP);
-        //    } catch(Exception ex) {
-        //        Console.WriteLine("Sender Exception: " + ex.Message);
-        //    }
-        //}
-
         private void StartAck()
         {   
             //Console.WriteLine("SetACK {0}", Message);
             //Agent.OnAckReceived += Receiver_OnAckReceived;
-            Agent.ackReceivers.Add(this);
-            Agent.OnSecondTick += OnTick;
+            (Agent as Agent).ackReceivers.Add(this);
+            (Agent as Agent).OnSecondTick += OnTick;
             //for(int i = 0; i < 5; i++) {
             //    Thread.Sleep(millisecondsTimeout);
             //    Send(false);
@@ -94,7 +80,7 @@ namespace Agent.Communication
         {
             //ackThread.Abort();
             //Agent.OnAckReceived -= Receiver_OnAckReceived;
-            Agent.OnSecondTick -= OnTick;
+            (Agent as Agent).OnSecondTick -= OnTick;
         }
 
         private void OnTick(object sender, EventArgs e)

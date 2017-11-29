@@ -1,16 +1,15 @@
-﻿using Agent;
-using Agent.Commands;
+﻿using Agent.Commands;
 using Agent.Communication;
 using Agent.Utilities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using AgentModel.Agent;
+using AgentModel.CommandData;
 
 namespace Agent
 {
-    public class Agent
+    public class Agent : IAgent
     {
         public string TAG { get; set; }
         public string IP { get; private set; }
@@ -65,7 +64,7 @@ namespace Agent
                 Console.WriteLine("Executing command {0}", config.StartCommand);
                 Command c = CommandHandler.GetCommand(CommandsArray, config.StartCommand);
                 c.Inject(this);
-                c.Execute();
+                c.ExecuteCommand();
             }
 
             string ip = "192.168.43.125";
@@ -73,7 +72,6 @@ namespace Agent
 
             //var d = new Duplicate(this) { ip = IP, port = Port };
 
-            var d = new Duplicate(this) { ip = ip, port = port };
             var s = new Send() {
                 ip = ip,
                 port = port,
@@ -140,17 +138,15 @@ namespace Agent
                 //Console.WriteLine("Agent not ack {0}", x++);
 
                 //JObject json = JsonConvert.DeserializeObject<JObject>(e.message);
-                Ack ack = new Ack(this) { message = e.message };
+                Ack ack = new Ack() { message = e.message };
                 string message = CommandHandler.CommandToString(ack);
                 //Console.WriteLine("\n<<Sending ACK to {0}:{1}: {2}", c.SourceIP, c.SourcePort, message);
                 //Console.WriteLine("Sending ack {0}", message);
                 new Sender(null, c.sourceIp, c.sourcePort, message).Send(false);
             }
 
-            c.ExecutedTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-            c.Execute();
+            c.ExecuteCommand();
         }
-
 
         private void LoadConfig(string config_path)
         {

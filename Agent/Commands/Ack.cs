@@ -1,18 +1,11 @@
 ﻿
-using Agent.Communication;
-using Newtonsoft.Json.Linq;
+using AgentModel.CommandData;
 
 namespace Agent.Commands
 {
-    public class Ack : Command
+    public class Ack : AckData
     {
-        public string message { get; set; }
-
-        public Ack() : base() { }
-
-        public Ack(Agent agent) : base(agent) { }
-
-        public override void Execute()
+        public override void ExecuteCommand()
         {
             // TODO
             // A) Ma posilat ACK

@@ -1,0 +1,87 @@
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Linq;
+using System.Reflection;
+
+namespace AgentModel.CommandData
+{
+    public class CommandHandler
+    {
+        public static Command GetCommand(Command[] commands, string json)
+        {
+            JObject dataObj = JsonConvert.DeserializeObject<JObject>(json);
+            string commandType = dataObj["type"].ToString();
+
+            Type type = null;
+            for(int i = 0; i < commands.Length; i++) {
+                if(commandType.Equals(commands[i].CommandName)) {
+                    type = commands[i].GetType();
+                }
+            }
+
+            if(type == null) {
+                throw new Exception(String.Format("Unknown command {0}", json));
+            }
+
+            Command command = (Command)JsonConvert.DeserializeObject(json, type);
+
+            return command;
+        }
+
+        public static string CommandToString(Command c)
+        {
+            return JsonConvert.SerializeObject(c);
+        }
+
+        public static Command GetCommand(string json)
+        {
+            JObject dataObj = JsonConvert.DeserializeObject<JObject>(json);
+            //string commandType = dataObj["type"].ToString();
+
+            string commandType = typeof(Command).Namespace + "." + dataObj["type"].ToString();
+
+            Type type = Type.GetType(commandType, true, true);
+            Command command = (Command)JsonConvert.DeserializeObject(json, type);
+
+            return command;
+        }
+
+        public static bool HandleCommand(Command command, params string[] args)
+        {
+            foreach(var methodIfo in command.GetType().GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public).Where(x => x.Name == "Call")) {
+                var parameters = methodIfo.GetParameters();
+
+                if(parameters.Length != args.Length)
+                    continue;
+
+                object[] objs = new object[args.Length];
+                bool isValid = true;
+
+                for(int i = 0; i < parameters.Length; i++) {
+                    if(parameters[i].ParameterType == typeof(string)) {
+                        objs[i] = args[i];
+                        continue;
+                    }
+
+                    var tryParseMethod = parameters[i].ParameterType.GetMethod("TryParse", new Type[] { typeof(string), parameters[i].ParameterType.MakeByRefType() });
+                    if(!(bool)tryParseMethod.Invoke(command, new object[] { args[i], objs[i] })) {
+                        isValid = false;
+                        break;
+                    }
+
+                    var parseMethod = parameters[i].ParameterType.GetMethod("Parse", new Type[] { typeof(string) });
+                    objs[i] = parseMethod.Invoke(command, new object[] { args[i] });
+                }
+
+                if(isValid) {
+                    methodIfo.Invoke(command, objs);
+                    return true;
+                }
+            }
+
+            Console.WriteLine("Invalid arguments");
+            return false;
+        }
+    }
+}

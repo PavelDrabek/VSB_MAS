@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AgentModel.CommandData;
 
 namespace Agent.Commands
 {
-    public class Halt : Command
+    public class Halt : HaltData
     {
-        public override void Execute()
+        public override void ExecuteCommand()
         {
             Agent.Stop();
         }

@@ -1,27 +1,16 @@
 ﻿using Agent.Communication;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AgentModel.CommandData;
 
 namespace Agent.Commands
 {
-    public class Package : Command
+    public class Package : PackageData
     {
-        public string data { get; set; }
-        public int order { get; set; }
-        public string fileName { get; set; }
-        public int partsCount { get; set; }
-
-        public Package() : base() { }
-        public Package(Agent agent) : base(agent) { }
-
-        public override void Execute()
+        public override void ExecuteCommand()
         {
-            bool result = Agent.PackageControl.Add(fileName, data, order, partsCount, sourceIp + "_" + sourcePort + "/");
+            bool result = (Agent as Agent).PackageControl.Add(fileName, data, order, partsCount, sourceIp + "_" + sourcePort + "/");
             if(result) {
-                var c = new PackageReceived(Agent);
+                var c = new PackageReceived();
+                c.SetFromAgent(Agent);
                 new Sender(Agent, sourceIp, sourcePort, c);
             }
         }

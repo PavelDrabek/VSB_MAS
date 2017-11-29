@@ -69,10 +69,8 @@
     <Compile Include="Agent\AgentContactBook.cs" />
     <Compile Include="Agent\PackageControl.cs" />
     <Compile Include="Commands\Ack.cs" />
-    <Compile Include="Commands\Command.cs" />
-    <Compile Include="Commands\CommandAttribute.cs" />
-    <Compile Include="Commands\CommandHandler.cs" />
     <Compile Include="Commands\Duplicate.cs" />
+    <Compile Include="Commands\Execute.cs" />
     <Compile Include="Commands\Halt.cs" />
     <Compile Include="Commands\Package.cs" />
     <Compile Include="Commands\PackageReceived.cs" />
@@ -103,6 +101,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AgentModel\AgentModel.csproj">
+      <Project>{981a65a0-2259-46c1-819e-0e51e99dc901}</Project>
+      <Name>AgentModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

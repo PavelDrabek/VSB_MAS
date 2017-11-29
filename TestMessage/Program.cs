@@ -12,7 +12,7 @@ namespace TestMessage
     {
         static void Main(string[] args)
         {
-            int port = 8888;
+            int port = 22222;
             string ip = "127.0.0.1";
 
             UdpClient udpSender = new UdpClient();

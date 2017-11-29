@@ -1,21 +1,11 @@
-﻿using Agent.Communication;
+﻿using AgentModel.CommandData;
 using System;
-using System.IO;
-using System.Threading;
 
 namespace Agent.Commands
 {
-    public class PackageReceived : Command
+    public class PackageReceived : PackageReceivedData
     {
-        public PackageReceived()
-        {
-        }
-
-        public PackageReceived(Agent agent) : base(agent)
-        {
-        }
-
-        public override void Execute()
+        public override void ExecuteCommand()
         {
             Console.WriteLine("Package Received from {0}:{1}", sourceIp, sourcePort);
         }

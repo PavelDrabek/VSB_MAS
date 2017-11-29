@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace Agent.Commands
+﻿namespace Agent.Commands
 {
     public abstract class Command
     {
@@ -8,17 +6,15 @@ namespace Agent.Commands
         public string sourceIp { get; set; }
         public string tag { get; set; }
         public int sourcePort { get; set; }
-        [JsonIgnore]
-        public long ExecutedTime { get; set; }
 
-        protected Agent Agent { get; private set; }
+        protected IAgent Agent { get; private set; }
 
         public Command()
         {
             type = GetType().Name.ToUpper();
         }
 
-        public Command(Agent agent) : this()
+        public Command(IAgent agent) : this()
         {
             Agent = agent;
             tag = Agent.TAG;
@@ -26,13 +22,13 @@ namespace Agent.Commands
             sourcePort = Agent.Port;
         }
 
-        public void Inject(Agent agent)
+        public void Inject(IAgent agent)
         {
             Agent = agent;
             //SourceIP = Agent.IP;
             //SourcePort = Agent.Port;
         }
 
-        public abstract void Execute();
+        public virtual void ExecuteCommand() { }
     }
 }

