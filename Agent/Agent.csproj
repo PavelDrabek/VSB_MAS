@@ -73,6 +73,7 @@
     <Compile Include="Commands\CommandAttribute.cs" />
     <Compile Include="Commands\CommandHandler.cs" />
     <Compile Include="Commands\Duplicate.cs" />
+    <Compile Include="Commands\Execute.cs" />
     <Compile Include="Commands\Halt.cs" />
     <Compile Include="Commands\Package.cs" />
     <Compile Include="Commands\PackageReceived.cs" />

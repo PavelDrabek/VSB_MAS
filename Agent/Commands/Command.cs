@@ -33,6 +33,6 @@ namespace Agent.Commands
             //SourcePort = Agent.Port;
         }
 
-        public abstract void Execute();
+        public abstract void ExecuteCommand();
     }
 }

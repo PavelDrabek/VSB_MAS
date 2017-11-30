@@ -13,7 +13,7 @@ namespace Agent.Commands
         public string[] values { get; set; }
         public JObject message { get; set; }
 
-        public override void Execute()
+        public override void ExecuteCommand()
         {
             throw new NotImplementedException();
         }

@@ -20,10 +20,10 @@ namespace Agent.Commands
             this.port = port;
             //this.message = JsonConvert.DeserializeObject<JObject>(message);
             this.message = message;
-            Execute();
+            ExecuteCommand();
         }
 
-        public override void Execute()
+        public override void ExecuteCommand()
         {
             var jobject = JsonConvert.DeserializeObject<JObject>(message);
             jobject["sourceIp"] = Agent.IP;

@@ -8,7 +8,7 @@ namespace Agent.Commands
 {
     public class Halt : Command
     {
-        public override void Execute()
+        public override void ExecuteCommand()
         {
             Agent.Stop();
         }

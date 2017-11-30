@@ -15,7 +15,7 @@ namespace Agent.Commands
         {
         }
 
-        public override void Execute()
+        public override void ExecuteCommand()
         {
             using(StreamWriter file = new System.IO.StreamWriter("log.txt")) {
                 file.WriteLine(value);

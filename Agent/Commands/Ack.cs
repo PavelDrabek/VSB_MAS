@@ -12,7 +12,7 @@ namespace Agent.Commands
 
         public Ack(Agent agent) : base(agent) { }
 
-        public override void Execute()
+        public override void ExecuteCommand()
         {
             // TODO
             // A) Ma posilat ACK

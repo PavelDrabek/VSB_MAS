@@ -22,6 +22,7 @@ namespace Agent
             agent.AddCommand(new Duplicate());
             agent.AddCommand(new Package());
             agent.AddCommand(new PackageReceived());
+            agent.AddCommand(new Execute());
 
             agent.Start();
         }

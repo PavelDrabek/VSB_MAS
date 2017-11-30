@@ -65,7 +65,7 @@ namespace Agent
                 Console.WriteLine("Executing command {0}", config.StartCommand);
                 Command c = CommandHandler.GetCommand(CommandsArray, config.StartCommand);
                 c.Inject(this);
-                c.Execute();
+                c.ExecuteCommand();
             }
 
             string ip = "192.168.43.125";
@@ -148,7 +148,7 @@ namespace Agent
             }
 
             c.ExecutedTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-            c.Execute();
+            c.ExecuteCommand();
         }
 
 

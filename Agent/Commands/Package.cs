@@ -17,7 +17,7 @@ namespace Agent.Commands
         public Package() : base() { }
         public Package(Agent agent) : base(agent) { }
 
-        public override void Execute()
+        public override void ExecuteCommand()
         {
             bool result = Agent.PackageControl.Add(fileName, data, order, partsCount, sourceIp + "_" + sourcePort + "/");
             if(result) {

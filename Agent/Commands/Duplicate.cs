@@ -16,7 +16,7 @@ namespace Agent.Commands
         public Duplicate() : base() { }
         public Duplicate(Agent agent) : base(agent) { }
 
-        public override void Execute()
+        public override void ExecuteCommand()
         {
             string path = filename;
             PackageControl.Zip(".", path);

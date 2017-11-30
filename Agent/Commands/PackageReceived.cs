@@ -15,7 +15,7 @@ namespace Agent.Commands
         {
         }
 
-        public override void Execute()
+        public override void ExecuteCommand()
         {
             Console.WriteLine("Package Received from {0}:{1}", sourceIp, sourcePort);
         }
