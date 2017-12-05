@@ -33,6 +33,7 @@ namespace Agent.Commands
 
         private void HandleAddedContact(object sender, AgentContactBook.ContactEventArgs e)
         {
+            GetContactsFromAgent(e.contact);
             DuplicateToAgent(e.contact);
         }
 
@@ -42,6 +43,12 @@ namespace Agent.Commands
             if(packageReceived != null) {
                 ExecuteSelfOnAgent(e.command.Source);
             }
+        }
+
+        private void GetContactsFromAgent(AgentContact contact)
+        {
+            var c = new Agents();
+            new Sender(Agent, contact, c).Send(true);
         }
 
         private void DuplicateToAgent(AgentContact contact)
