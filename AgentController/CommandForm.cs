@@ -57,7 +57,9 @@ namespace AgentController
             DataTable table = dgvCommand.DataSource as DataTable;
             table.Clear();
 
-            var properties = c.GetType().GetProperties();
+            var properties = c.GetType()
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Where(ø => ø.CanRead && ø.CanWrite).ToArray<PropertyInfo>();
 
             for(int i = 0; i < properties.Length; i++) {
                 DataRow dr = table.NewRow();
@@ -85,7 +87,7 @@ namespace AgentController
                         }
 
                         var tryParseMethod = properties[i].PropertyType.GetMethod("TryParse", new Type[] { typeof(string), properties[i].PropertyType.MakeByRefType() });
-                        if((bool)tryParseMethod.Invoke(c, new object[] { v, o })) {
+                        if(tryParseMethod != null && (bool)tryParseMethod.Invoke(c, new object[] { v, o })) {
                             properties[i].SetValue(c, o);
                             continue;
                         }

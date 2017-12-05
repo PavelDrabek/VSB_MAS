@@ -5,6 +5,8 @@ namespace Agent.Commands
 {
     public class Execute : Command
     {
+        public static string MyExecuteCommand = "Agent.exe";
+
         public string command { get; set; }
 
         public override void ExecuteCommand()
@@ -12,8 +14,8 @@ namespace Agent.Commands
             ProcessStartInfo ProcessInfo;
             Process Process;
 
-            string toDir = "cd " + sourceIp + "_" + sourcePort + "\n";
-            Console.WriteLine("Executing " + toDir);
+            string toDir = "cd " + "received/" + sourceIp + "_" + sourcePort + "&";
+            Console.WriteLine("Executing " + toDir + command);
 
             ProcessInfo = new ProcessStartInfo("cmd.exe", "/K " + toDir + command);
             ProcessInfo.CreateNoWindow = true;

@@ -1,16 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace Agent.Utilities
 {
     public class Logger
     {
-        public static void Log(string s)
-        {
+        [Flags]
+        public enum Level { Agent, Command, Debug, Warning, Error }
 
+        public string Path { get; private set; }
+        public Level LevelStore { get; set; }
+        public Level LevelConsole { get; set; }
+
+        public Logger(string path)
+        {
+            Path = path;
+            Write("", false);
+            LevelStore = Level.Warning | Level.Error;
+            LevelConsole = Level.Error;
+        }
+
+        public Logger(string path, Level store) : this(path)
+        {
+            LevelStore = store;
+        }
+
+        public void Log(string s, Level l = Level.Debug)
+        {
+            if((LevelStore & l) != 0) {
+                Write(s);
+            }
+            if((LevelConsole & l) != 0) {
+                Console.WriteLine(s);
+            }
+        }
+
+        private void Write(string s, bool append = true)
+        {
+            using(StreamWriter file = new System.IO.StreamWriter(Path, append)) {
+                file.WriteLine(s);
+                file.Close();
+            }
         }
     }
 }

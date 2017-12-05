@@ -23,6 +23,8 @@ namespace Agent
             agent.AddCommand(new Package());
             agent.AddCommand(new PackageReceived());
             agent.AddCommand(new Execute());
+            agent.AddCommand(new Result());
+            agent.AddCommand(new PlanA());
 
             agent.Start();
         }

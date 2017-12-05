@@ -16,19 +16,26 @@ namespace Agent
         public string IP { get; private set; }
         public int Port { get; private set; }
 
+        public AgentContact Contact { get { return new AgentContact() { ip = IP, port = Port, tag = TAG }; } }
+
         public Receiver Receiver { get; private set; }
         public PackageControl PackageControl { get; private set; }
+        public AgentContactBook AgentContactBook { get; set; }
 
         public Dictionary<string, Command> Commands { get; private set; }
         public Command[] CommandsArray { get { return new List<Command>(Commands.Values).ToArray(); } }
 
-        public EventHandler<ReceiveEventArgs> OnAckReceived;
+        public EventHandler<CommandEventArgs> OnAckReceived;
+        public EventHandler<CommandEventArgs> OnCommandReceived;
         public List<IAckReceiver> ackReceivers;
+        public List<IResultListener> resultListeners;
+
+        public Dictionary<string, Command> PendingCommands { get; private set; }
 
         public EventHandler<EventArgs> OnSecondTick;
         private Thread tickThread;
 
-        private ConfigData config;
+        public ConfigData Config { get; private set; }
 
         public Agent()
         {
@@ -36,7 +43,9 @@ namespace Agent
             IP = IPHelper.GetLocalIPAddress();
 
             Commands = new Dictionary<string, Command>();
+            PendingCommands = new Dictionary<string, Command>();
 
+            AgentContactBook = new AgentContactBook();
             PackageControl = new PackageControl();
             ackReceivers = new List<IAckReceiver>();
 
@@ -60,31 +69,40 @@ namespace Agent
         {
             Receiver.Start();
             Console.WriteLine("Agent is started on {0}:{1}", IP, Port);
+            new Sender(this, Config.LoggerContact, new Store(this) { }).Send();
 
-            if(!string.IsNullOrEmpty(config.StartCommand)) {
-                Console.WriteLine("Executing command {0}", config.StartCommand);
-                Command c = CommandHandler.GetCommand(CommandsArray, config.StartCommand);
+            if(!string.IsNullOrEmpty(Config.StartCommand)) {
+                Console.WriteLine("Executing command {0}", Config.StartCommand);
+                Command c = CommandHandler.GetCommand(CommandsArray, Config.StartCommand);
                 c.Inject(this);
                 c.ExecuteCommand();
             }
 
+            //string ip = "192.168.43.56";
             string ip = "192.168.43.125";
             int port = 11111;
 
             //var d = new Duplicate(this) { ip = IP, port = Port };
 
-            var d = new Duplicate(this) { ip = ip, port = port };
+            var d = new Send() {
+                ip = IP,
+                port = Port,
+                message = CommandHandler.CommandToString(new Duplicate() { ip = ip, port = port })
+            };
+            var e = new Execute() {
+                command = Execute.MyExecuteCommand
+            };
+
             var s = new Send() {
                 ip = ip,
                 port = port,
-                message = CommandHandler.CommandToString(new Send() {
-                    ip = IP,
-                    port = Port,
-                    message = CommandHandler.CommandToString(new Duplicate() { ip = ip, port = port })
-                })
+                message = CommandHandler.CommandToString(e)
             };
             s.Inject(this);
-            //s.Execute();
+            //s.ExecuteCommand();
+
+
+
             //new Duplicate(this) { ip = "192.168.43.125", port = 53000 }.Execute();
             //new Duplicate(this) { ip = IP, port = Port }.Execute();
         }
@@ -101,6 +119,16 @@ namespace Agent
             Console.WriteLine("Adding command {0}", command.GetType().Name);
         }
 
+        public void AddContact(AgentContact contact)
+        {
+            AgentContactBook.Add(contact);
+        }
+
+        public void RemoveContact(AgentContact contact)
+        {
+            AgentContactBook.Remove(contact);
+        }
+
         static int x = 0;
         public bool SendOnAckReceived(Ack ack)
         {
@@ -115,49 +143,43 @@ namespace Agent
             return false;
         }
 
+        public void SendFailed(string message, string ip, int port)
+        {
+            Debug.Log(string.Format("Message send failed {1}:{2} {0}", message, ip, port), Logger.Level.Warning);
+            RemoveContact(new AgentContact() { ip = ip, port = port });
+        }
+
         private void Receiver_OnReceive(object sender, ReceiveEventArgs e)
         {
-            //Console.WriteLine("\n>>Message from {0}:{1}: {2}", e.sourceIP, e.sourcePort, e.message);
-
             Command c = CommandHandler.GetCommand(CommandsArray, e.message);
             if(c == null) {
-                Console.WriteLine("Unknown command " + e.message);
+                Debug.Log("Unknown command " + e.message, Logger.Level.Error);
             }
             c.Inject(this);
 
             if(c is Ack) {
                 bool received = SendOnAckReceived(c as Ack);
-                if(received) {
-                    //Console.WriteLine("Agent ack received {0}", x++);
-                    //Console.WriteLine("Agent ack received {0}", e.message);
-                } else {
-                    //Console.WriteLine("Agent received error {0}", e.message);
-                    //Console.WriteLine("Agent ack error {0}", x++);
-                    //Console.WriteLine("Agent ack error {0} {1}", x++, e.message);
-                }
+                OnAckReceived?.Invoke(this, new CommandEventArgs() { command = c });
             }
             else {
-                //Console.WriteLine("Agent not ack {0}", x++);
-
-                //JObject json = JsonConvert.DeserializeObject<JObject>(e.message);
                 Ack ack = new Ack(this) { message = e.message };
                 string message = CommandHandler.CommandToString(ack);
-                //Console.WriteLine("\n<<Sending ACK to {0}:{1}: {2}", c.SourceIP, c.SourcePort, message);
-                //Console.WriteLine("Sending ack {0}", message);
-                new Sender(null, c.sourceIp, c.sourcePort, message).Send(false);
+
+                new Sender(null, c.sourceIp, c.sourcePort, message).Send(false); // send ack
+                c.ExecuteCommand(); // execute command
+
+                OnCommandReceived?.Invoke(this, new CommandEventArgs() { command = c }); // invoke event
+
+                AddContact(c.Source);
             }
-
-            c.ExecutedTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-            c.ExecuteCommand();
         }
-
 
         private void LoadConfig(string config_path)
         {
-            config = ConfigData.Deserialize(config_path);
+            Config = ConfigData.Deserialize(config_path);
 
-            Port = (config.Port != 0) ? config.Port : new Random().Next(config.PortFrom, config.PortTo);
-            TAG = config.Tag;
+            Port = (Config.Port != 0) ? Config.Port : new Random().Next(Config.PortFrom, Config.PortTo);
+            TAG = Config.Tag;
         }
     }
 }

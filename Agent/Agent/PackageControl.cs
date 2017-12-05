@@ -34,7 +34,7 @@ namespace Agent
                 counter[filename]++;
 
                 if(counter[filename] == count) {
-                    return MakeFile(filename, sender + "/");
+                    return MakeFile(filename, "received/" + sender + "/");
                 }
             }
             return false;
@@ -59,7 +59,7 @@ namespace Agent
                 zip.AddFile("Agent.exe");
                 zip.AddFile("DotNetZip.dll");
                 zip.AddFile("Newtonsoft.Json.dll");
-                zip.AddFile("config.xml");
+                zip.AddFile("tmp/config.xml", "");
                 //zip.AddDirectory(sourcePath);
                 zip.Save(destPath);
             }
@@ -69,8 +69,16 @@ namespace Agent
         {
             if(ZipFile.IsZipFile(zipPath)) {
                 using(ZipFile zip1 = ZipFile.Read(zipPath)) {
-                    zip1.ExtractAll(destPath);
+                    zip1.ExtractAll(destPath, ExtractExistingFileAction.OverwriteSilently);
                 }
+            }
+        }
+
+        public static void CreatePath(string filePath)
+        {
+            int i = filePath.LastIndexOf('/');
+            if(i >= 0) {
+                Directory.CreateDirectory(filePath.Substring(0, i));
             }
         }
     }

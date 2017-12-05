@@ -1,5 +1,7 @@
 ﻿using Agent.Communication;
+using Agent.Utilities;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
@@ -18,6 +20,8 @@ namespace Agent.Commands
 
         public override void ExecuteCommand()
         {
+            PrepareConfig();
+
             string path = filename;
             PackageControl.Zip(".", path);
             string text = Convert.ToBase64String(File.ReadAllBytes(path));
@@ -28,11 +32,21 @@ namespace Agent.Commands
                 int index = i * maxLength;
                 parts[i] = text.Substring(index, Math.Min(maxLength, text.Length - index));
                 Command c = new Package(Agent) { partsCount = count, data = parts[i], fileName = filename, order = i };
-                new Sender(Agent, ip, port, CommandHandler.CommandToString(c)).Send();
+                new Sender(Agent, sourceIp, sourcePort, CommandHandler.CommandToString(c)).Send();
                 Thread.Sleep(1);
             }
 
             // Tady se muze poslat check, jestli soubor dorazil v poradku (command ExistsFile, result true/false)
+        }
+
+        private void PrepareConfig()
+        {
+            ConfigData config = new ConfigData(Agent.Config) {
+                Contacts = new List<AgentContact>() { Agent.Contact },
+                Port = 0
+            };
+
+            ConfigData.Serialize(config, "tmp/config.xml");
         }
     }
 }

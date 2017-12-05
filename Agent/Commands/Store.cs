@@ -11,9 +11,8 @@ namespace Agent.Commands
     {
         public string value { get; set; }
 
-        public Store()
-        {
-        }
+        public Store() : base() { }
+        public Store(Agent agent) : base(agent) { }
 
         public override void ExecuteCommand()
         {

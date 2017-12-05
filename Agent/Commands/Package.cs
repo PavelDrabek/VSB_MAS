@@ -22,7 +22,7 @@ namespace Agent.Commands
             bool result = Agent.PackageControl.Add(fileName, data, order, partsCount, sourceIp + "_" + sourcePort + "/");
             if(result) {
                 var c = new PackageReceived(Agent);
-                new Sender(Agent, sourceIp, sourcePort, c);
+                new Sender(Agent, sourceIp, sourcePort, c).Send();
             }
         }
     }

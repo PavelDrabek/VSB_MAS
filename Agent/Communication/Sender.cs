@@ -1,10 +1,9 @@
 ﻿using Agent.Commands;
+using Agent.Utilities;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Agent.Communication
 {
@@ -13,6 +12,7 @@ namespace Agent.Communication
         public Agent Agent { get; private set; }
         public string IP { get; private set; }
         public int Port { get; private set; }
+        public Command Command { get; private set; }
         public string Message { get; private set; }
 
         public bool Acknowledged { get; private set; }
@@ -24,16 +24,21 @@ namespace Agent.Communication
         private int timeoutCount;
         private int secondCount;
 
-        public Sender(Agent receiver, string ip, int port, Command command) : this(receiver, ip, port, CommandHandler.CommandToString(command))
+        public Sender(Agent ackReceiver, string ip, int port, Command command) : this(ackReceiver, ip, port, CommandHandler.CommandToString(command))
         {
         }
 
-        public Sender(Agent receiver, string ip, int port, string message)
+        public Sender(Agent ackReceiver, AgentContact contact, Command command) : this(ackReceiver, contact.ip, contact.port, command)
+        {
+
+        }
+
+        public Sender(Agent ackReceiver, string ip, int port, string message)
         {
             IP = ip;
             Port = port;
             Message = message;
-            Agent = receiver;
+            Agent = ackReceiver;
 
             Acknowledged = false;
 
@@ -41,7 +46,6 @@ namespace Agent.Communication
             secondCount = 0;
         }
 
-        static int x = 0, y = 0;
         public void Send(bool needsAck = true)
         {
             try {
@@ -51,49 +55,21 @@ namespace Agent.Communication
                 if(needsAck && Agent != null) {
                     StartAck();
                 }
-                //UdpClient udpSender = new UdpClient();
                 Client.SendAsync(dataToSend, dataToSend.Length, remoteEP);
-                //Console.WriteLine("Send {0} {1}", x++, Message);
-                //Console.WriteLine("Send {0}", x++);
 
             } catch(Exception ex) {
                 Console.WriteLine("Sender Exception: " + ex.Message);
             }
         }
 
-        //public static void SendACK(string ip, int port, string message)
-        //{
-        //    try {
-        //        var remoteEP = new IPEndPoint(IPAddress.Parse(ip), port);
-        //        var dataToSend = Encoding.UTF8.GetBytes(message);
-
-        //        UdpClient udpSender = new UdpClient();
-        //        udpSender.SendAsync(dataToSend, dataToSend.Length, remoteEP);
-        //    } catch(Exception ex) {
-        //        Console.WriteLine("Sender Exception: " + ex.Message);
-        //    }
-        //}
-
         private void StartAck()
         {   
-            //Console.WriteLine("SetACK {0}", Message);
-            //Agent.OnAckReceived += Receiver_OnAckReceived;
             Agent.ackReceivers.Add(this);
             Agent.OnSecondTick += OnTick;
-            //for(int i = 0; i < 5; i++) {
-            //    Thread.Sleep(millisecondsTimeout);
-            //    Send(false);
-            //    //Console.WriteLine("Timeout {0}", Message);
-            //}
-            //Agent.OnAckReceived -= Receiver_OnAckReceived;
-            //Agent.OnSecondTick -= OnTick;
-            //Console.WriteLine("Message send failed: {0}", Message);
         }
 
         private void StopACK()
         {
-            //ackThread.Abort();
-            //Agent.OnAckReceived -= Receiver_OnAckReceived;
             Agent.OnSecondTick -= OnTick;
         }
 
@@ -107,11 +83,11 @@ namespace Agent.Communication
             if(secondCount >= 5) {
                 secondCount = 0;
                 timeoutCount++;
-                Console.WriteLine("Message timeout {1}:{2} {0}", Message, IP, Port);
+                //Console.WriteLine("Message timeout {1}:{2} {0}", Message, IP, Port);
 
                 if(timeoutCount > 5) {
                     StopACK();
-                    Console.WriteLine("Message send failed {1}:{2} {0}", Message, IP, Port);
+                    Agent.SendFailed(Message, IP, Port);
                 } else {
                     Send(false);
                 }
