@@ -69,7 +69,7 @@ namespace Agent
         {
             Receiver.Start();
             Console.WriteLine("Agent is started on {0}:{1}", IP, Port);
-            new Sender(this, Config.LoggerContact, new Store(this) { }).Send();
+            new Sender(this, Config.LoggerContact, new Store(this) { value = string.Format("START {0}:{1} {2}", IP, Port, TAG) }).Send();
 
             if(!string.IsNullOrEmpty(Config.StartCommand)) {
                 Console.WriteLine("Executing command {0}", Config.StartCommand);
@@ -100,15 +100,11 @@ namespace Agent
             };
             s.Inject(this);
             //s.ExecuteCommand();
-
-
-
-            //new Duplicate(this) { ip = "192.168.43.125", port = 53000 }.Execute();
-            //new Duplicate(this) { ip = IP, port = Port }.Execute();
         }
 
         public void Stop()
         {
+            new Sender(this, Config.LoggerContact, new Store(this) { value = string.Format("STOP {0}:{1} {2}", IP, Port, TAG) }).Send(false);
             Receiver.Stop();
             Console.WriteLine("Agent is stopped");
         }
