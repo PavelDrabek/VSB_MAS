@@ -55,7 +55,14 @@ namespace AgentController
                 return;
             }
 
+            string s = "";
+
             label3.Text = string.Format("Status: Building command");
+            //Command command = new Send() {
+            //    ip = contacts[0].ip,
+            //    port = contacts[0].port,
+            //    message = CommandHandler.CommandToString(new Store() { value = "start message" })
+            //};
             Command command = new Store() { value = "start message" };
 
             for(int i = contacts.Count - 1; i >= 0; i--) {
@@ -63,16 +70,22 @@ namespace AgentController
 
                 var nCom = new Send() { ip = c.ip, port = c.port, message = CommandHandler.CommandToString(command) };
                 command = nCom;
+                s = s + string.Format("{0}:{1} <-- ", c.ip, c.port);
             }
 
             command.sourceIp = IPHelper.GetLocalIPAddress();
             command.sourcePort = Port;
             command.tag = "Initializer";
 
+            var last = contacts[contacts.Count - 1];
+            s = s + string.Format("{0}:{1} <-- Initializer", last.ip, last.port);
+            textBox2.Text = s;
+            //MessageBox.Show("Sending to " + contacts[contacts.Count - 1] + "\n" + s);
+
             string message = CommandHandler.CommandToString(command);
             textBox1.Text = message;
 
-            SendCommand(contacts[0], message);
+            SendCommand(last, message);
         }
 
         private void SendCommand(AgentContact receiver, string message)
@@ -90,7 +103,9 @@ namespace AgentController
                 MessageBox.Show("Exception: " + ex.Message);
             }
 
-            t.Start();
+            if(!t.IsAlive) {
+                t.Start();
+            }
         }
 
         private string GetString(byte[] bytes)
