@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Agent.Utilities;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -24,10 +25,16 @@ namespace Agent.Commands
             }
 
             if(type == null) {
-                throw new Exception(String.Format("Unknown command {0}", json));
+                Debug.Log(String.Format("Unknown command {0}", json), Logger.Level.Error);
+                return null;
             }
 
-            Command command = (Command)JsonConvert.DeserializeObject(json, type);
+            Command command = null;
+            try {
+                command = (Command)JsonConvert.DeserializeObject(json, type);
+            } catch(Exception e) {
+                Debug.Log(String.Format("Cannot deserialize command {0} \n {1}", json, e.Message), Logger.Level.Error);
+            }
 
             return command;
         }

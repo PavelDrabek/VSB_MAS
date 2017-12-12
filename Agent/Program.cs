@@ -1,4 +1,6 @@
 ﻿using Agent.Commands;
+using Agent.Utilities;
+using System;
 
 namespace Agent
 {
@@ -24,9 +26,14 @@ namespace Agent
             agent.AddCommand(new PackageReceived());
             agent.AddCommand(new Execute());
             agent.AddCommand(new Result());
+            agent.AddCommand(new Agents());
             agent.AddCommand(new PlanA());
 
-            agent.Start();
+            try {
+                agent.Start();
+            } catch(Exception e) {
+                Debug.Log(string.Format("Program error: {0}\n{1}", e.Message, e.StackTrace), Logger.Level.Error);
+            }
         }
     }
 }

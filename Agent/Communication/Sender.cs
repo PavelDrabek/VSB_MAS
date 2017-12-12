@@ -52,13 +52,18 @@ namespace Agent.Communication
                 var remoteEP = new IPEndPoint(IPAddress.Parse(IP), Port);
                 var dataToSend = Encoding.UTF8.GetBytes(Message);
 
+                if(needsAck) {
+                    Debug.Log(string.Format("Command send {0}:{1} - {2}", IP, Port, Message), Logger.Level.Command);
+                }
+
                 if(needsAck && Agent != null) {
                     StartAck();
                 }
                 Client.SendAsync(dataToSend, dataToSend.Length, remoteEP);
 
             } catch(Exception ex) {
-                Console.WriteLine("Sender Exception: " + ex.Message);
+                //Console.WriteLine("Sender Exception: " + ex.Message);
+                Debug.Log("Sender Exception: " + ex.Message, Logger.Level.Error);
             }
         }
 

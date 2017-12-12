@@ -32,6 +32,7 @@
             this.txtMessage = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
+            this.btnCircuit = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtAdress
@@ -86,6 +87,17 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // btnCircuit
+            // 
+            this.btnCircuit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCircuit.Location = new System.Drawing.Point(523, 43);
+            this.btnCircuit.Name = "btnCircuit";
+            this.btnCircuit.Size = new System.Drawing.Size(96, 23);
+            this.btnCircuit.TabIndex = 1;
+            this.btnCircuit.Text = "Circuit";
+            this.btnCircuit.UseVisualStyleBackColor = true;
+            this.btnCircuit.Click += new System.EventHandler(this.btnCircuit_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -93,6 +105,7 @@
             this.ClientSize = new System.Drawing.Size(733, 422);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtMessage);
+            this.Controls.Add(this.btnCircuit);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.txtAdress);
@@ -111,6 +124,7 @@
         private System.Windows.Forms.TextBox txtMessage;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnCircuit;
     }
 }
 

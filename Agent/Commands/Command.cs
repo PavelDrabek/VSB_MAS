@@ -15,6 +15,7 @@ namespace Agent.Commands
         public string tag { get; set; }
         public int sourcePort { get; set; }
 
+        [JsonIgnore]
         public AgentContact Source { get { return new AgentContact() { ip = sourceIp, port = sourcePort, tag = tag }; } }
 
         protected Agent Agent { get; private set; }
@@ -25,6 +26,14 @@ namespace Agent.Commands
         }
 
         public Command(Agent agent) : this()
+        {
+            Agent = agent;
+            tag = Agent.TAG;
+            sourceIp = Agent.IP;
+            sourcePort = Agent.Port;
+        }
+
+        public virtual void InjectAgentInfo(Agent agent)
         {
             Agent = agent;
             tag = Agent.TAG;

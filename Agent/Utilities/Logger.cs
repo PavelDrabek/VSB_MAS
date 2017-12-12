@@ -6,7 +6,7 @@ namespace Agent.Utilities
     public class Logger
     {
         [Flags]
-        public enum Level { Agent, Command, Debug, Warning, Error }
+        public enum Level { None = 0, Error = 1, Warning = 2, Debug = 4, Agent = 8, Command = 16, Plan = 32 }
 
         public string Path { get; private set; }
         public Level LevelStore { get; set; }
@@ -16,8 +16,8 @@ namespace Agent.Utilities
         {
             Path = path;
             Write("", false);
-            LevelStore = Level.Warning | Level.Error;
-            LevelConsole = Level.Error;
+            LevelStore = Level.Error | Level.Warning | Level.Plan | Level.Command;
+            LevelConsole = Level.Error | Level.Warning | Level.Plan; // | Level.Command;
         }
 
         public Logger(string path, Level store) : this(path)
@@ -37,9 +37,13 @@ namespace Agent.Utilities
 
         private void Write(string s, bool append = true)
         {
-            using(StreamWriter file = new System.IO.StreamWriter(Path, append)) {
-                file.WriteLine(s);
-                file.Close();
+            try {
+                using(StreamWriter file = new System.IO.StreamWriter(Path, append)) {
+                    file.WriteLine(s);
+                    file.Close();
+                }
+            } catch {
+                Console.WriteLine(s);
             }
         }
     }

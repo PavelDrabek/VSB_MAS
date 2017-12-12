@@ -43,7 +43,8 @@ namespace Agent.Commands
         {
             ConfigData config = new ConfigData(Agent.Config) {
                 Contacts = new List<AgentContact>() { Agent.Contact },
-                Port = 0
+                Port = 0, 
+                StartCommand = CommandHandler.CommandToString(new PlanA())
             };
 
             ConfigData.Serialize(config, "tmp/config.xml");

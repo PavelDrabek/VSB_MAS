@@ -1,4 +1,5 @@
 ﻿using Agent.Communication;
+using Agent.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,37 +43,60 @@ namespace Agent.Commands
             var packageReceived = e.command as PackageReceived;
             if(packageReceived != null) {
                 ExecuteSelfOnAgent(e.command.Source);
+                if(!e.command.Source.tag.Equals(Agent.TAG)) {
+                    SendHaltToAgent(e.command.Source);
+                }
             }
         }
 
         private void GetContactsFromAgent(AgentContact contact)
         {
+            Debug.Log(string.Format("Plan: getting agents from {0}", contact), Logger.Level.Plan);
             var c = new Agents();
+            c.InjectAgentInfo(Agent);
             new Sender(Agent, contact, c).Send(true);
         }
 
         private void DuplicateToAgent(AgentContact contact)
         {
+            Debug.Log(string.Format("Plan: duplicate to {0}", contact), Logger.Level.Plan);
             var c = PrepareBreedCommand(contact, Agent.Contact);
+            c.InjectAgentInfo(Agent);
             new Sender(Agent, contact, c).Send(true);
         }
 
         private void ExecuteSelfOnAgent(AgentContact contact)
         {
+            Debug.Log(string.Format("Plan: executing on {0}", contact), Logger.Level.Plan);
             var c = new Execute() { command = Execute.MyExecuteCommand };
+            c.InjectAgentInfo(Agent);
+            new Sender(Agent, contact, c).Send(true);
+        }
+
+        private void SendHaltToAgent(AgentContact contact)
+        {
+            Debug.Log(string.Format("Plan: halt to {0}", contact), Logger.Level.Plan);
+            var c = new Halt();
+            c.InjectAgentInfo(Agent);
             new Sender(Agent, contact, c).Send(true);
         }
 
         public static Command PrepareBreedCommand(AgentContact receiver, AgentContact sender)
         {
+            //var s = new Send() {
+            //    ip = receiver.ip,
+            //    port = receiver.port,
+            //    message = CommandHandler.CommandToString(new Send() {
+            //        ip = sender.ip,
+            //        port = sender.port,
+            //        message = CommandHandler.CommandToString(new Duplicate() { ip = receiver.ip, port = receiver.port })
+            //    })
+            //};
+
             var s = new Send() {
-                ip = receiver.ip,
-                port = receiver.port,
-                message = CommandHandler.CommandToString(new Send() {
-                    ip = sender.ip,
-                    port = sender.port,
-                    message = CommandHandler.CommandToString(new Duplicate() { ip = receiver.ip, port = receiver.port })
-                })
+                ip = sender.ip,
+                port = sender.port,
+                message = CommandHandler.CommandToString(new Duplicate() { ip = receiver.ip, port = receiver.port })
             };
 
             return s;

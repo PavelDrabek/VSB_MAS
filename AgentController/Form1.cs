@@ -52,5 +52,11 @@ namespace AgentController
                 MessageBox.Show(ee.Message);
             }
         }
+
+        private void btnCircuit_Click(object sender, EventArgs e)
+        {
+            SendCicuit commandForm = new SendCicuit();
+            commandForm.Show();
+        }
     }
 }

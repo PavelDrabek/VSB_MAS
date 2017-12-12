@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Agent.Utilities;
+using System;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -53,7 +54,8 @@ namespace Agent.Communication
                     ip = dataReceived.Result.RemoteEndPoint.Address.ToString();
                     port = dataReceived.Result.RemoteEndPoint.Port;
                 } catch(Exception ex) {
-                    Console.WriteLine("Receiver Exception: " + ex.Message);
+                    //Console.WriteLine("Receiver Exception: " + ex.Message);
+                    Debug.Log("Receiver Exception: " + ex.Message, Logger.Level.Error);
                 }
 
                 //Console.WriteLine("Received {0}", x++);

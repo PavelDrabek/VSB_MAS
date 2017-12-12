@@ -10,7 +10,7 @@ namespace Agent.Commands
     {
         public override void ExecuteCommand()
         {
-            Agent.Stop();
+            Agent.Stop(Source);
         }
     }
 }
