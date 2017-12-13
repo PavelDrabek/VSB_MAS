@@ -31,6 +31,8 @@ namespace AgentController
 
         private void button1_Click(object sender, EventArgs e)
         {
+            DataCreator.Generate("");
+
             try {
                 label3.Text = string.Format("Status: Parsing addresses");
 

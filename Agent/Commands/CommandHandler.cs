@@ -34,12 +34,18 @@ namespace Agent.Commands
                 command = (Command)JsonConvert.DeserializeObject(json, type);
             } catch(Exception e) {
                 Debug.Log(String.Format("Cannot deserialize command {0} \n {1}", json, e.Message), Logger.Level.Error);
+                command = null;
             }
 
             return command;
         }
 
         public static string CommandToString(Command c)
+        {
+            return JsonConvert.SerializeObject(c);
+        }
+
+        public static string SerializeObject(object c)
         {
             return JsonConvert.SerializeObject(c);
         }

@@ -51,6 +51,7 @@
     <Compile Include="CommandForm.Designer.cs">
       <DependentUpon>CommandForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataCreator.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

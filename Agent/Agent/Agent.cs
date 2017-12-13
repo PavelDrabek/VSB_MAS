@@ -70,7 +70,7 @@ namespace Agent
         {
             Receiver.Start();
             Console.WriteLine("Agent is started on {0}:{1}", IP, Port);
-            new Sender(this, Config.LoggerContact, new Store(this) { value = string.Format("START {0}:{1} {2}", IP, Port, TAG) }).Send(false);
+            new Sender(this, Config.LoggerContact, new Store(this) { value = string.Format("START {0}:{1} {2}", IP, Port, TAG) }).Send(true);
 
             if(!string.IsNullOrEmpty(Config.StartCommand)) {
                 Console.WriteLine("Executing command {0}", Config.StartCommand);
