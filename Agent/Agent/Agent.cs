@@ -60,7 +60,7 @@ namespace Agent
         private void TicTac()
         {
             for(;;) {
-                Thread.Sleep(500);
+                Thread.Sleep(Config.TickDuration);
                 //Console.WriteLine("Tick");
                 OnSecondTick?.Invoke(this, EventArgs.Empty);
             }

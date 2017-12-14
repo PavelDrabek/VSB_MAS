@@ -18,6 +18,11 @@ namespace Agent.Utilities
         public List<AgentContact> Contacts { get; set; }
         public string StartCommand { get; set; }
 
+        public int TickDuration { get; set; }
+        public int NumTickToTimeout { get; set; }
+        public int NumTimeoutsToFail { get; set; }
+
+
         public ConfigData() { }
 
         public ConfigData(ConfigData c)

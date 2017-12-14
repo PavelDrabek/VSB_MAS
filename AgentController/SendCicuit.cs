@@ -135,8 +135,11 @@ namespace AgentController
                 }
 
             } catch(Exception ex) {
-                MessageBox.Show("Exception: " + ex.Message);
+                //MessageBox.Show("Exception: " + ex.Message);
             }
+
+            client.Close();
+            client.Dispose();
         }
     }
 }

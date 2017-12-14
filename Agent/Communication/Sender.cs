@@ -85,12 +85,12 @@ namespace Agent.Communication
             }
 
             secondCount++;
-            if(secondCount >= 5) {
+            if(secondCount >= Agent.Config.NumTickToTimeout) {
                 secondCount = 0;
                 timeoutCount++;
                 //Console.WriteLine("Message timeout {1}:{2} {0}", Message, IP, Port);
 
-                if(timeoutCount > 5) {
+                if(timeoutCount > Agent.Config.NumTimeoutsToFail) {
                     StopACK();
                     Agent.SendFailed(Message, IP, Port);
                 } else {
