@@ -23,8 +23,9 @@ namespace Agent.Commands
             PrepareConfig();
 
             string path = filename;
-            PackageControl.Zip(".", path);
-            string text = Convert.ToBase64String(File.ReadAllBytes(path));
+            var stream = PackageControl.Zip(".", path) as MemoryStream;
+            //string text = Convert.ToBase64String(File.ReadAllBytes(path));
+            string text = Convert.ToBase64String(stream.ToArray());
             int count = (int)(text.Length / maxLength) + 1;
             string[] parts = new string[count];
 
@@ -41,13 +42,19 @@ namespace Agent.Commands
 
         private void PrepareConfig()
         {
+            string path = "tmp/config.xml";
+            //if(File.Exists(path)) {
+                //Debug.Log(string.Format("Prepare config skip: File already exists"), Logger.Level.Warning);
+                //return;
+            //}
+
             ConfigData config = new ConfigData(Agent.Config) {
                 Contacts = new List<AgentContact>() { Agent.Contact },
                 Port = 0, 
                 StartCommand = CommandHandler.CommandToString(new PlanA())
             };
 
-            ConfigData.Serialize(config, "tmp/config.xml");
+            ConfigData.Serialize(config, path);
         }
     }
 }

@@ -53,16 +53,18 @@ namespace Agent
             return true;
         }
 
-        public static void Zip(string sourcePath, string destPath)
+        public static Stream Zip(string sourcePath, string destPath)
         {
+            MemoryStream ms = new MemoryStream();
             using(ZipFile zip = new ZipFile()) {
                 zip.AddFile("Agent.exe");
                 zip.AddFile("DotNetZip.dll");
                 zip.AddFile("Newtonsoft.Json.dll");
                 zip.AddFile("tmp/config.xml", "");
                 //zip.AddDirectory(sourcePath);
-                zip.Save(destPath);
+                zip.Save(ms);
             }
+            return ms;
         }
 
         public static void Unzip(string zipPath, string destPath)

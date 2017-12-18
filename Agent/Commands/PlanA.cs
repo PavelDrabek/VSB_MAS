@@ -1,10 +1,5 @@
 ﻿using Agent.Communication;
 using Agent.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
@@ -42,7 +37,9 @@ namespace Agent.Commands
         {
             var packageReceived = e.command as PackageReceived;
             if(packageReceived != null) {
-                ExecuteSelfOnAgent(e.command.Source);
+                for(int i = 0; i < Agent.Config.NumExecute; i++) {
+                    ExecuteSelfOnAgent(e.command.Source);
+                }
                 if(!e.command.Source.tag.Equals(Agent.TAG)) {
                     SendHaltToAgent(e.command.Source);
                 }

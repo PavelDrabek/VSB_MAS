@@ -22,6 +22,8 @@ namespace Agent.Utilities
         public int NumTickToTimeout { get; set; }
         public int NumTimeoutsToFail { get; set; }
 
+        public int NumExecute { get; set; }
+
 
         public ConfigData() { }
 
@@ -34,6 +36,11 @@ namespace Agent.Utilities
             LoggerContact = c.LoggerContact == null ? null : new AgentContact() { ip = c.LoggerContact.ip, port = c.LoggerContact.port, tag = c.LoggerContact.tag };
             StartCommand = c.StartCommand;
             Contacts = new List<AgentContact>(c.Contacts);
+
+            TickDuration = c.TickDuration;
+            NumTickToTimeout = c.NumTickToTimeout;
+            NumTimeoutsToFail = c.NumTimeoutsToFail;
+            NumExecute = c.NumExecute;
         }
 
         static public void Serialize(ConfigData data, string path)
@@ -48,7 +55,8 @@ namespace Agent.Utilities
         static public ConfigData Deserialize(string path)
         {
             XmlSerializer deserializer = new XmlSerializer(typeof(ConfigData));
-            TextReader reader = new StreamReader(path);
+            var reader = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            //TextReader reader = new StreamReader(path);
             var data = (ConfigData)deserializer.Deserialize(reader);
             reader.Close();
             return data;

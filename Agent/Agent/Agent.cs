@@ -110,6 +110,7 @@ namespace Agent
             new Sender(this, Config.LoggerContact, new Store(this) { value = string.Format("END {0}:{1} {2} by {3}:{4} {5}", IP, Port, TAG, source.ip, source.port, source.tag) }).Send(false);
             Console.WriteLine("Agent is stopped 1");
             Environment.Exit(0);
+            tickThread.Abort();
             Receiver.Stop();
         }
 
@@ -145,7 +146,8 @@ namespace Agent
 
         public void SendFailed(string message, string ip, int port)
         {
-            Debug.Log(string.Format("Message send failed {1}:{2} {0}", message, ip, port), Logger.Level.Warning);
+            var c = CommandHandler.GetCommand(CommandsArray, message);
+            Debug.Log(string.Format("Message send failed {1}:{2} - {0}", c.type, ip, port), Logger.Level.Warning);
             RemoveContact(new AgentContact() { ip = ip, port = port });
         }
 
@@ -184,7 +186,15 @@ namespace Agent
         {
             Config = ConfigData.Deserialize(config_path);
 
-            Port = (Config.Port != 0) ? Config.Port : new Random().Next(Config.PortFrom, Config.PortTo);
+            var date = DateTime.Now;
+
+            if(Config.Port == 0) {
+                Port = new Random(date.Minute + date.Second + date.Millisecond).Next(Config.PortFrom, Config.PortTo);
+                Debug.Log(string.Format("Random generated port {0}", Port), Logger.Level.Warning);
+            } else {
+                Port = Config.Port;
+            }
+
             TAG = Config.Tag;
 
             for(int i = 0; i < Config.Contacts.Count; i++) {

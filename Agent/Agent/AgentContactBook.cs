@@ -36,6 +36,9 @@ namespace Agent
             if(a.ip.Equals(agent.IP) && a.port == agent.Port) {
                 return;
             }
+            if(a.tag.Equals("Logger") || a.tag.Equals("Initializer")) {
+                return;
+            }
 
             if(Contains(a.ip, a.port)) {
                 return;

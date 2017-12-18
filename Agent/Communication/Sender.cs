@@ -81,8 +81,15 @@ namespace Agent.Communication
         private void OnTick(object sender, EventArgs e)
         {
             if(Acknowledged) {
+                StopACK();
                 return;
             }
+
+            //if(!Agent.AgentContactBook.Contains(IP, Port)) {
+            //    Debug.Log(string.Format("Killing send to {0}:{1} - {2}", IP, Port, Message), Logger.Level.Command);
+            //    StopACK();
+            //    return;
+            //}
 
             secondCount++;
             if(secondCount >= Agent.Config.NumTickToTimeout) {
